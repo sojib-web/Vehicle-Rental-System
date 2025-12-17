@@ -18,6 +18,26 @@ const createUser = async (req: Request, res: Response) => {
   }
 };
 
+const signIn = async (req: Request, res: Response) => {
+  try {
+    const result = await authService.signInDB(
+      req.body.email,
+      req.body.password
+    );
+    res.status(200).json({
+      success: true,
+      message: "User signed in successfully",
+      data: result,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || "Internal Server Error",
+    });
+  }
+};
+
 export const authController = {
   createUser,
+  signIn,
 };

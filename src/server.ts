@@ -1,19 +1,27 @@
 import express, { Request, Response } from "express";
 
-import { initDB } from "./config/db";
+import { initDB } from "./modules/auth/auth.sql";
 import { authRouter } from "./modules/auth/auth.route";
+import { env } from "./config/env";
+import { userRoutes } from "./modules/users/user.route";
 
 const app = express();
-const PORT = 5000;
 
 // middleware
 app.use(express.json());
 
-initDB();
+const startServer = async () => {
+  try {
+    await initDB();
+  } catch (error) {
+    console.error("Failed to initialize database:", error);
+  }
+};
 
 // signup route
-app.use("/api/v1/auth/signup", authRouter);
-app.use("/api/v1/auth/signin", authRouter);
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1", userRoutes);
 
 // root route
 app.get("/", (req: Request, res: Response) => {
@@ -25,6 +33,8 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 // server start
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(env.port, () => {
+  console.log(`Server running on port ${env.port}`);
 });
+
+startServer();

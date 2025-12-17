@@ -1,6 +1,7 @@
 // src/modules/auth/auth.service.ts
 import { pool } from "../../config/db";
 import bcrypt from "bcryptjs";
+import { generateToken } from "../../utils/auth.utils";
 
 interface CreateUserPayload {
   name: string;
@@ -43,10 +44,42 @@ const createUserDB = async (payload: CreateUserPayload) => {
     "INSERT INTO users (name, email, password, phone, role) VALUES ($1, $2, $3, $4, $5) RETURNING *",
     [name, emailLower, hashedPassword, phone, role || "customer"]
   );
+  delete result.rows[0].password; // remove password from returned data
 
   return result.rows[0];
 };
 
+const signInDB = async (email: string, password: string) => {
+  // Implementation for signInDB goes here
+  if (!email || !password) {
+    throw new Error("Email and password are required");
+  }
+  const emailLower = email.toLowerCase();
+  const userResult = await pool.query("SELECT * FROM users WHERE email = $1", [
+    emailLower,
+  ]);
+
+  if (userResult.rows.length === 0) {
+    throw new Error("Invalid email or password");
+  }
+
+  const user = userResult.rows[0];
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+
+  if (!isPasswordValid) {
+    throw new Error("Invalid email or password");
+  }
+  const token = generateToken({
+    id: user.id,
+    email: user.email,
+    role: user.role,
+  });
+  delete user.password;
+  return { user, token };
+};
+
 export const authService = {
   createUserDB,
+  signInDB,
 };
