@@ -10,6 +10,13 @@ const getUsers = async () => {
   return usersWithoutPassword;
 };
 
+const updateUser = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { name, email } = req.body;
+  console.log(id);
+};
+
 export const userService = {
   getUsers,
+  updateUser,
 };
