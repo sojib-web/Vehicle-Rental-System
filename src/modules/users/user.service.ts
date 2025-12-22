@@ -1,4 +1,3 @@
-import { Request, Response } from "express";
 import { pool } from "../../config/db";
 
 const getUsers = async () => {
@@ -6,17 +5,54 @@ const getUsers = async () => {
   const result = await pool.query("SELECT * FROM users");
   // Remove password from each user object
   const usersWithoutPassword = result.rows.map(({ password, ...user }) => user);
-
   return usersWithoutPassword;
 };
 
-const updateUser = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { name, email } = req.body;
-  console.log(id);
+const updatedUser = async (
+  loggedInUser: { id: number; role: string },
+  targetUserId: number,
+  data: any
+) => {
+  if (loggedInUser.role === "customer" && loggedInUser.id !== targetUserId) {
+    throw new Error("Forbidden: You can update only your own profile");
+  }
+
+  // cannot change role
+  if (loggedInUser.role === "customer") {
+    delete data.role;
+  }
+
+  // allowed fields
+  const fields = [];
+  const values = [];
+  let idx = 1;
+
+  for (const key of ["name", "phone", "role"]) {
+    if (data[key]) {
+      fields.push(`${key}=$${idx}`);
+      values.push(data[key]);
+      idx++;
+    }
+  }
+
+  if (!fields.length) {
+    throw new Error("Nothing to update");
+  }
+
+  values.push(targetUserId);
+
+  const query = `
+    UPDATE users
+    SET ${fields.join(", ")}, updated_at=NOW()
+    WHERE id=$${idx}
+    RETURNING id, name, email, phone, role
+  `;
+
+  const result = await pool.query(query, values);
+  return result.rows[0];
 };
 
 export const userService = {
   getUsers,
-  updateUser,
+  updatedUser,
 };

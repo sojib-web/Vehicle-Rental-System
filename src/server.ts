@@ -21,7 +21,9 @@ const startServer = async () => {
 // signup route
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/auth", authRouter);
+// user route
 app.use("/api/v1", userRoutes);
+app.use("api/v1", userRoutes);
 
 // root route
 app.get("/", (req: Request, res: Response) => {

@@ -75,7 +75,7 @@ const signInDB = async (email: string, password: string) => {
     email: user.email,
     role: user.role,
   });
-  console.log("token xz ", token);
+
   delete user.password;
   return { user, token };
 };
