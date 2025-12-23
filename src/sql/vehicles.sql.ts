@@ -8,7 +8,7 @@ export const createVehiclesDB = async () => {
   type VARCHAR(50) NOT NULL,
   registration_number VARCHAR(50) UNIQUE NOT NULL,
   daily_rent_price NUMERIC NOT NULL,
-  availability_status BOOLEAN DEFAULT true,
+  availability_status VARCHAR(100),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

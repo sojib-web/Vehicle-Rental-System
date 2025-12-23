@@ -31,6 +31,8 @@ app.use("api/v1", userRoutes);
 // vehicles  route
 app.use("/api/v1", vehicleRoute);
 app.use("/api/v1", vehicleRoute);
+app.use("/api/v1/vehicles", vehicleRoute);
+app.use("/api/v1/vehicles", vehicleRoute);
 
 // root route
 app.get("/", (req: Request, res: Response) => {

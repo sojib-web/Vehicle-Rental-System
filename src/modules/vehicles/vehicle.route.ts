@@ -11,5 +11,12 @@ router.post(
   vehicleController.createVehicles
 );
 router.get("/vehicles", vehicleController.getVehicles);
+router.get("/:vehicleId", vehicleController.getVehiclesId);
+router.put(
+  "/:vehicleId",
+  auth,
+  authorization("admin"),
+  vehicleController.updateVehicle
+);
 
 export const vehicleRoute = router;
