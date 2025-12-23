@@ -1,5 +1,5 @@
 import { pool } from "../../config/db";
-
+import { Request, Response } from "express";
 const getUsers = async () => {
   // Implementation for getUsers goes here
   const result = await pool.query("SELECT * FROM users");
@@ -52,7 +52,12 @@ const updatedUser = async (
   return result.rows[0];
 };
 
+const deleteUser = async () => {
+  const result = await pool.query("SELECT * FROM users");
+  console.log(result);
+};
 export const userService = {
   getUsers,
   updatedUser,
+  deleteUser,
 };

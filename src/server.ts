@@ -4,6 +4,8 @@ import { initDB } from "./modules/auth/auth.sql";
 import { authRouter } from "./modules/auth/auth.route";
 import { env } from "./config/env";
 import { userRoutes } from "./modules/users/user.route";
+import { vehicleRoute } from "./modules/vehicles/vehicle.route";
+import { createVehiclesDB } from "./sql/vehicles.sql";
 
 const app = express();
 
@@ -13,6 +15,7 @@ app.use(express.json());
 const startServer = async () => {
   try {
     await initDB();
+    await createVehiclesDB();
   } catch (error) {
     console.error("Failed to initialize database:", error);
   }
@@ -24,6 +27,10 @@ app.use("/api/v1/auth", authRouter);
 // user route
 app.use("/api/v1", userRoutes);
 app.use("api/v1", userRoutes);
+
+// vehicles  route
+app.use("/api/v1", vehicleRoute);
+app.use("/api/v1", vehicleRoute);
 
 // root route
 app.get("/", (req: Request, res: Response) => {
